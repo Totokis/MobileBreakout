@@ -3,12 +3,15 @@
 // ----------------------------- PARAMETERS -----------------------------
 var canvas = document.getElementById("main_canvas");
 var context = canvas.getContext("2d");
-// context.rotate(40 * Math.PI / 180);
-
+// context.rotate(90 * Math.PI/180);
+// context.translate(0,-canvas.height)
+var canvasWidth = canvas.width;
+var canvasHeigth = canvas.height;
 // Piłka, jej rozmiar i pozycja startowa (nie po utraceniu życia)
 var ballRadius = 10;
-var ballXStartingPosition = canvas.width/2;
-var ballYStartingPosition = canvas.height-25;
+console.log(canvasWidth);
+var ballXStartingPosition = canvasWidth/2;
+var ballYStartingPosition = canvasHeigth-25;
 var ballXPosition = ballXStartingPosition;
 var ballYPosition = ballYStartingPosition;
 
@@ -21,7 +24,7 @@ var playerHeight = 10;
 var playerWidth = 80;
 
 // Sterowanie za pomocą klawiatury (strzałki)
-var playerPosition = (canvas.width-playerWidth)/2;
+var playerPosition = (canvasWidth-playerWidth)/2;
 var rightPressed = false;
 var leftPressed = false;
 var speed = 7;
@@ -77,7 +80,7 @@ document.addEventListener("keyup", keyUp, false);
 
 // function mouseMove(e) {
 // 	var relativeX = e.clientX - canvas.offsetLeft;
-// 	if(relativeX > 0 && relativeX < canvas.width) {
+// 	if(relativeX > 0 && relativeX < canvasWidth) {
 // 		playerPosition = relativeX - playerWidth/2;
 // 	}
 // }
@@ -174,7 +177,7 @@ function drawBall() {
 
 function drawPlayer() {
 	context.beginPath();
-	context.rect(playerPosition, canvas.height-playerHeight, playerWidth, playerHeight);
+	context.rect(playerPosition, canvasHeigth-playerHeight, playerWidth, playerHeight);
 	context.fillStyle = playerColor;
 	context.fill();
 	context.closePath();
@@ -190,11 +193,11 @@ function drawScore() {
 function drawLives() {
 	context.font = "17px Times New Roman";
 	context.fillStyle = scoreAndLivesColor;
-	context.fillText("Życia: "+lives, canvas.width-65, 20);
+	context.fillText("Życia: "+lives, canvasWidth-65, 20);
 }
 
 function drawGame() {
-	context.clearRect(0, 0, canvas.width, canvas.height);
+	context.clearRect(0, 0, canvasWidth, canvasHeigth);
 	drawBricks();
 	drawBall();
 	drawPlayer();
@@ -202,20 +205,20 @@ function drawGame() {
 	drawLives();
 	collisionDetection();
 
-	if(ballXPosition + ballSpeedX > canvas.width-ballRadius || ballXPosition + ballSpeedX < ballRadius) {
+	if(ballXPosition + ballSpeedX > canvasWidth-ballRadius || ballXPosition + ballSpeedX < ballRadius) {
 		ballSpeedX = -ballSpeedX;
 	}
 	if(ballYPosition + ballSpeedY < ballRadius) {
 		ballSpeedY = -ballSpeedY;
 	}
-	else if(ballYPosition + ballSpeedY > canvas.height-ballRadius) {
+	else if(ballYPosition + ballSpeedY > canvasHeigth-ballRadius) {
 		if(ballXPosition > playerPosition && ballXPosition < playerPosition + playerWidth) {
 			ballSpeedY = -ballSpeedY;
     	}
 		else {
 			lives--;
 			if(!lives) {
-        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.clearRect(0, 0, canvasWidth, canvasHeigth);
       	drawBricks();
       	drawBall();
       	drawPlayer();
@@ -230,12 +233,12 @@ function drawGame() {
         		ballYPosition = ballYStartingPosition;
         		ballSpeedX = 3;
         		ballSpeedY = -3;
-        		playerPosition = (canvas.width-playerWidth)/2;
+        		playerPosition = (canvasWidth-playerWidth)/2;
 			}
 		}
 	}
 
-	if(rightPressed && playerPosition < canvas.width-playerWidth) {
+	if(rightPressed && playerPosition < canvasWidth-playerWidth) {
 		playerPosition += speed;
 	}
 	else if(leftPressed && playerPosition > 0) {
@@ -253,9 +256,9 @@ function loadNewLevel() {
   ballYPosition = ballYStartingPosition;
   ballSpeedX = 3;
   ballSpeedY = -3;
-  playerPosition = (canvas.width-playerWidth)/2;
+  playerPosition = (canvasWidth-playerWidth)/2;
   setupBricks();
-  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.clearRect(0, 0, canvasWidth, canvasHeigth);
 	drawBricks();
 	drawBall();
 	drawPlayer();
