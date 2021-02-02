@@ -7,8 +7,10 @@ var context = canvas.getContext("2d");
 
 // Piłka, jej rozmiar i pozycja startowa (nie po utraceniu życia)
 var ballRadius = 10;
-var ballXPosition = canvas.width/2;
-var ballYPosition = canvas.height-25;
+var ballXStartingPosition = canvas.width/2;
+var ballYStartingPosition = canvas.height-25;
+var ballXPosition = ballXStartingPosition;
+var ballYPosition = ballYStartingPosition;
 
 // Predkosc piłki
 var ballSpeedX = 3;
@@ -19,7 +21,7 @@ var playerHeight = 10;
 var playerWidth = 80;
 
 // Sterowanie za pomocą klawiatury (strzałki)
-var playerSpeedX = (canvas.width-playerWidth)/2;
+var playerPosition = (canvas.width-playerWidth)/2;
 var rightPressed = false;
 var leftPressed = false;
 
@@ -36,12 +38,14 @@ var brickOffsetTop = 35;
 // od lewej
 var brickOffsetLeft = 30;
 
+//info takie tam o grze i wgl
 var score = 0;
 var lives = 3;
+var level = 1;
 
 // Kolory
 var brickColors = ["#EA3812", "#44EA12", "#12BEEA", "#C012EA", "#EA9E12","#1242C5", "#CBE032", "#E11A8F", "13F1B0"]
-var playerColor = "#140507" 
+var playerColor = "#140507"
 var ballColor = "#140507"
 var scoreAndLivesColor = "#000"
 
@@ -49,17 +53,20 @@ var scoreAndLivesColor = "#000"
 
 
 var bricks = Array();
-for(column = 0; column < brickAmountColumn; column++) {
-	bricks[column] = Array();
-	rowRandomColor = brickColors[Math.floor(Math.random() * brickColors.length)];
-	for(row = 0; row < brickAmountRow; row++) {
-		bricks[column][row] = { 
-			x: 0,
-			y: 0,
-			color: rowRandomColor,
-			notDestroyed: 1
-		};
-	}
+
+function setupBricks(){
+  for(column = 0; column < brickAmountColumn; column++) {
+  	bricks[column] = Array();
+  	rowRandomColor = brickColors[Math.floor(Math.random() * brickColors.length)];
+  	for(row = 0; row < brickAmountRow; row++) {
+  		bricks[column][row] = {
+  			x: 0,
+  			y: 0,
+  			color: rowRandomColor,
+  			notDestroyed: 1
+  		};
+  	}
+  }
 }
 
 // Sterowanie
@@ -70,24 +77,25 @@ document.addEventListener("keyup", keyUp, false);
 // function mouseMove(e) {
 // 	var relativeX = e.clientX - canvas.offsetLeft;
 // 	if(relativeX > 0 && relativeX < canvas.width) {
-// 		playerSpeedX = relativeX - playerWidth/2;
+// 		playerPosition = relativeX - playerWidth/2;
 // 	}
 // }
 
 function keyDown(e) {
-    if(e.key == "Right" || e.key == "ArrowRight") {
+    console.log(e.key);
+    if(e.key == "Right" || e.key == "ArrowRight" || e.key == "d" || e.key == "D") {
         rightPressed = true;
     }
-    else if(e.key == "Left" || e.key == "ArrowLeft") {
+    else if(e.key == "Left" || e.key == "ArrowLeft" || e.key == "a" || e.key == "A") {
         leftPressed = true;
     }
 }
 
 function keyUp(e) {
-    if(e.key == "Right" || e.key == "ArrowRight") {
+    if(e.key == "Right" || e.key == "ArrowRight" || e.key == "d" || e.key == "D") {
         rightPressed = false;
     }
-    else if(e.key == "Left" || e.key == "ArrowLeft") {
+    else if(e.key == "Left" || e.key == "ArrowLeft" || e.key == "a" || e.key == "A") {
         leftPressed = false;
     }
 }
@@ -113,9 +121,10 @@ function collisionDetection() {
          			ballSpeedY = -ballSpeedY;
 					score++;
 					// Jeśli score = ilości bloków to wygraliśmy
-        			if(score == brickAmountRow*brickAmountColumn) {
-        				alert("YOU WIN, CONGRATS!");
-						document.location.reload();
+        			if(score == brickAmountRow * brickAmountColumn * level) {
+                loadNewLevel()
+        				//alert("YOU WIN, CONGRATS!");
+						    //document.location.reload();
 					}
         		}
       		}
@@ -151,7 +160,7 @@ function drawBall() {
 
 function drawPlayer() {
 	context.beginPath();
-	context.rect(playerSpeedX, canvas.height-playerHeight, playerWidth, playerHeight);
+	context.rect(playerPosition, canvas.height-playerHeight, playerWidth, playerHeight);
 	context.fillStyle = playerColor;
 	context.fill();
 	context.closePath();
@@ -186,30 +195,37 @@ function drawGame() {
 		ballSpeedY = -ballSpeedY;
 	}
 	else if(ballYPosition + ballSpeedY > canvas.height-ballRadius) {
-		if(ballXPosition > playerSpeedX && ballXPosition < playerSpeedX + playerWidth) {
+		if(ballXPosition > playerPosition && ballXPosition < playerPosition + playerWidth) {
 			ballSpeedY = -ballSpeedY;
     	}
 		else {
 			lives--;
 			if(!lives) {
-				alert("GAME OVER");
+        context.clearRect(0, 0, canvas.width, canvas.height);
+      	drawBricks();
+      	drawBall();
+      	drawPlayer();
+      	drawScore();
+      	drawLives();
+        collisionDetection();
+				alert("FUCKING LOOSER");
 				document.location.reload();
 			}
 			else {
-        		ballXPosition = canvas.width/2;
-        		ballYPosition = canvas.height-30;
+        		ballXPosition = ballXStartingPosition;
+        		ballYPosition = ballYStartingPosition;
         		ballSpeedX = 3;
         		ballSpeedY = -3;
-        		playerSpeedX = (canvas.width-playerWidth)/2;
+        		playerPosition = (canvas.width-playerWidth)/2;
 			}
 		}
 	}
 
-	if(rightPressed && playerSpeedX < canvas.width-playerWidth) {
-		playerSpeedX += 7;
+	if(rightPressed && playerPosition < canvas.width-playerWidth) {
+		playerPosition += 7;
 	}
-	else if(leftPressed && playerSpeedX > 0) {
-		playerSpeedX -= 7;
+	else if(leftPressed && playerPosition > 0) {
+		playerPosition -= 7;
 	}
 
 	ballXPosition += ballSpeedX;
@@ -217,4 +233,22 @@ function drawGame() {
 	requestAnimationFrame(drawGame);
 }
 
+function loadNewLevel() {
+  level++;
+  ballXPosition = ballXStartingPosition;
+  ballYPosition = ballYStartingPosition;
+  ballSpeedX = 3;
+  ballSpeedY = -3;
+  playerPosition = (canvas.width-playerWidth)/2;
+  setupBricks();
+  context.clearRect(0, 0, canvas.width, canvas.height);
+	drawBricks();
+	drawBall();
+	drawPlayer();
+	drawScore();
+	drawLives();
+	collisionDetection();
+}
+
+setupBricks();
 drawGame();
