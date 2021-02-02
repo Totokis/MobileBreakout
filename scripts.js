@@ -24,6 +24,7 @@ var playerWidth = 80;
 var playerPosition = (canvas.width-playerWidth)/2;
 var rightPressed = false;
 var leftPressed = false;
+var speed = 7;
 
 // Parametry planszy
 var brickAmountRow = 5;
@@ -88,6 +89,19 @@ function keyDown(e) {
     }
     else if(e.key == "Left" || e.key == "ArrowLeft" || e.key == "a" || e.key == "A") {
         leftPressed = true;
+    }
+    else if(e.key == " ") {
+        alert("PAUZA");
+        if(rightPressed)
+        {
+          rightPressed = false;
+          playerPosition -= speed;
+        }
+        else if(leftPressed)
+        {
+          leftPressed = false;
+          playerPosition += speed;
+        }
     }
 }
 
@@ -222,10 +236,10 @@ function drawGame() {
 	}
 
 	if(rightPressed && playerPosition < canvas.width-playerWidth) {
-		playerPosition += 7;
+		playerPosition += speed;
 	}
 	else if(leftPressed && playerPosition > 0) {
-		playerPosition -= 7;
+		playerPosition -= speed;
 	}
 
 	ballXPosition += ballSpeedX;
