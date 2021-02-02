@@ -1,0 +1,13 @@
+/* Paweł Piłat, Norbert Janas, Paweł Janusz */
+
+html {
+    background-image: linear-gradient(to right,rgb(68, 68, 206), rgb(224, 163, 50));
+    text-align: center;
+}
+
+canvas { 
+    box-sizing: border-box;
+    border: 4px rgb(150, 150, 150) solid;
+    border-radius: 5px;
+    background: #eee; 
+}
