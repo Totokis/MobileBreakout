@@ -5,11 +5,32 @@ var canvas = document.getElementById("main_canvas");
 var context = canvas.getContext("2d");
 // context.rotate(90 * Math.PI/180);
 // context.translate(0,-canvas.height)
+
+//ustawianie wielkości takiej jak okno
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
 var canvasWidth = canvas.width;
 var canvasHeigth = canvas.height;
 // Piłka, jej rozmiar i pozycja startowa (nie po utraceniu życia)
-var ballRadius = 10;
-console.log(canvasWidth);
+var offset = 0;
+var unit = 0;
+
+if(canvasHeigth >= canvasWidth){
+	unit = canvasWidth / 10;
+	offset = unit
+	unit = (canvasWidth - 2 * offset) / 10;
+	offset = (canvasWidth - (10 * unit))/2
+
+}
+else if(canvasWidth >= canvasHeigth ){
+	unit = canvasHeigth / 10;
+	offset = unit
+	unit = (canvasHeigth - 2 * offset) / 10;
+	offset = (canvasWidth - (10 * unit))/2
+}
+
+var ballRadius = unit/5;//10
 var ballXStartingPosition = canvasWidth/2;
 var ballYStartingPosition = canvasHeigth-25;
 var ballXPosition = ballXStartingPosition;
@@ -20,8 +41,8 @@ var ballSpeedX = 3;
 var ballSpeedY = -3;  // Negative
 
 // Gracz rozmiar
-var playerHeight = 10;
-var playerWidth = 80;
+var playerHeight = unit/2;//10
+var playerWidth = 2 * unit//80;
 
 // Sterowanie za pomocą klawiatury (strzałki)
 var playerPosition = (canvasWidth-playerWidth)/2;
@@ -32,15 +53,15 @@ var speed = 7;
 // Parametry planszy
 var brickAmountRow = 5;
 var brickAmountColumn = 3;
-var brickWidth = 75;
-var brickHeight = 20;
+var brickWidth = 2 * unit;//75
+var brickHeight =  unit;//20
 
-var brickPadding = 20;
+var brickPadding = unit/10;//20
 // Odstępy
 // od góry planszy
-var brickOffsetTop = 35;
+var brickOffsetTop = offset;//35
 // od lewej
-var brickOffsetLeft = 30;
+var brickOffsetLeft = offset;//30
 
 //info takie tam o grze i wgl
 var score = 0;
@@ -54,7 +75,6 @@ var ballColor = "#140507"
 var scoreAndLivesColor = "#000"
 
 // ----------------------------------------------------------------------
-
 
 var bricks = Array();
 
