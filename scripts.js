@@ -289,3 +289,31 @@ function loadNewLevel() {
 
 setupBricks();
 drawGame();
+
+
+$('#view').on('touchstart', function(e) {
+	var clickX = e.touches[0];
+	console.log(e.touches);
+	var viewWidth = $("#view").width();	
+	if (clickX.clientX > viewWidth/2) {
+		rightPressed = true;
+	} else {
+		leftPressed = true;
+	}
+}).on('touchend', function(e) {
+	if (e.touches.length > 0){
+		var viewWidth = $("#view").width();	
+		var latestTouch = e.touches[0];
+		rightPressed = false;
+		leftPressed = false;
+		if (latestTouch.clientX > viewWidth/2) {
+			rightPressed = true;
+		} else {
+			leftPressed = true;
+		}
+	} else{
+		rightPressed = false;
+		leftPressed = false;
+	}
+
+});
