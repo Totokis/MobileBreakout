@@ -69,7 +69,8 @@ var lives = 3;
 var level = 1;
 
 // Kolory
-var brickColors = ["#EA3812", "#44EA12", "#12BEEA", "#C012EA", "#EA9E12","#1242C5", "#CBE032", "#E11A8F", "13F1B0"]
+//var brickColors = ["#EA3812", "#44EA12", "#12BEEA", "#C012EA", "#EA9E12","#1242C5", "#CBE032", "#E11A8F", "13F1B0"]
+var brickColors = ["#ff0000", "#ffa500", "#ffff00", "#008000", "#0000ff","#4b0082", "#ee82ee"];
 var playerColor = "#140507"
 var ballColor = "#140507"
 var scoreAndLivesColor = "#000"
@@ -79,9 +80,12 @@ var scoreAndLivesColor = "#000"
 var bricks = Array();
 
 function setupBricks(){
-  for(column = 0; column < brickAmountColumn; column++) {
+    let currentColorIndex = Math.floor(Math.random() * brickColors.length);
+    let previousColorIndex = currentColorIndex;
+    rowRandomColor = brickColors[currentColorIndex];
+    for(column = 0; column < brickAmountColumn; column++) {
   	bricks[column] = Array();
-  	rowRandomColor = brickColors[Math.floor(Math.random() * brickColors.length)];
+  	//rowRandomColor = brickColors[Math.floor(Math.random() * brickColors.length)];
   	for(row = 0; row < brickAmountRow; row++) {
   		bricks[column][row] = {
   			x: 0,
@@ -90,6 +94,9 @@ function setupBricks(){
   			notDestroyed: 1
   		};
   	}
+    currentColorIndex = (previousColorIndex + Math.ceil(Math.random() * (Math.round(brickColors.length / 2) - 1))) % brickColors.length;
+    rowRandomColor = brickColors[currentColorIndex];
+    previousColorIndex = currentColorIndex;
   }
 }
 
