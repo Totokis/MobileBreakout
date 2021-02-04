@@ -329,7 +329,6 @@ function drawGame() {
     drawScore();
     drawLives();
     collisionDetection();
-            alert("FUCKING LOOSER");
             document.location.reload();
         }
         else {
