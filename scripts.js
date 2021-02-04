@@ -1,5 +1,28 @@
 // Paweł Piłat, Norbert Janas, Paweł Janusz
 
+// Listen for resize changes
+window.addEventListener('load', function (){
+	var onResize = sessionStorage.getItem("onResize")
+	console.log('onResize: ' + onResize);
+	if(onResize==1){
+		console.log('onResize');
+		sessionStorage.setItem("onResize","0")
+	}
+	else if(onResize==0){
+		console.log('Not onResize');
+		sessionStorage.setItem("score","0");
+		sessionStorage.setItem("lives","3");
+	}
+});
+
+window.addEventListener("resize", function() {
+	// Get screen size (inner/outerWidth, inner/outerHeight)
+	sessionStorage.setItem("onResize","1")
+	sessionStorage.setItem("score",score.toString());
+	sessionStorage.setItem("lives",lives.toString());
+	location.reload()
+}, false);
+
 // ----------------------------- PARAMETERS -----------------------------
 var canvas = document.getElementById("main_canvas");
 var context = canvas.getContext("2d");
@@ -13,21 +36,25 @@ canvas.height = innerHeight;
 var canvasWidth = canvas.width;
 var canvasHeigth = canvas.height;
 // Piłka, jej rozmiar i pozycja startowa (nie po utraceniu życia)
-var offset = 0;
+var sideOffset = 0;
+var topOffset = 0;
+
 var unit = 0;
 
-if(canvasHeigth >= canvasWidth){
+if(canvasHeigth >= canvasWidth){//portrait
 	unit = canvasWidth / 10;
-	offset = unit
-	unit = (canvasWidth - 2 * offset) / 10;
-	offset = (canvasWidth - (10 * unit))/2
+	sideOffset = unit
+	unit = (canvasWidth - 2 * sideOffset) / 10;
+	sideOffset = (canvasWidth - (10 * unit))/2
+	topOffset = sideOffset
 
 }
-else if(canvasWidth >= canvasHeigth ){
+else if(canvasWidth >= canvasHeigth ){//landscape
 	unit = canvasHeigth / 10;
-	offset = unit
-	unit = (canvasHeigth - 2 * offset) / 10;
-	offset = (canvasWidth - (10 * unit))/2
+	sideOffset = unit
+	unit = (canvasHeigth - 2 * sideOffset) / 10;
+	sideOffset = (canvasWidth - (10 * unit))/2
+	topOffset = sideOffset / 10
 }
 
 var ballRadius = unit/5;//10
@@ -59,14 +86,22 @@ var brickHeight =  unit;//20
 var brickPadding = unit/10;//20
 // Odstępy
 // od góry planszy
-var brickOffsetTop = offset;//35
+var brickOffsetTop = topOffset;//35
 // od lewej
-var brickOffsetLeft = offset;//30
+var brickOffsetLeft = sideOffset;//30
 
-//info takie tam o grze i wgl
+//info takie tam o grze i
 var score = 0;
 var lives = 3;
 var level = 1;
+var storageScore = sessionStorage.getItem("score");
+var storageLives = sessionStorage.getItem("lives");
+if(storageScore){
+	score = storageScore;
+}
+if(storageLives){
+	lives = storageLives
+}
 
 // Kolory
 //var brickColors = ["#EA3812", "#44EA12", "#12BEEA", "#C012EA", "#EA9E12","#1242C5", "#CBE032", "#E11A8F", "13F1B0"]
@@ -296,3 +331,31 @@ function loadNewLevel() {
 
 setupBricks();
 drawGame();
+
+
+$('#view').on('touchstart', function(e) {
+	var clickX = e.touches[0];
+	console.log(e.touches);
+	var viewWidth = $("#view").width();	
+	if (clickX.clientX > viewWidth/2) {
+		rightPressed = true;
+	} else {
+		leftPressed = true;
+	}
+}).on('touchend', function(e) {
+	if (e.touches.length > 0){
+		var viewWidth = $("#view").width();	
+		var latestTouch = e.touches[0];
+		rightPressed = false;
+		leftPressed = false;
+		if (latestTouch.clientX > viewWidth/2) {
+			rightPressed = true;
+		} else {
+			leftPressed = true;
+		}
+	} else{
+		rightPressed = false;
+		leftPressed = false;
+	}
+
+});
