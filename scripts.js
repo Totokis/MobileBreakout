@@ -59,7 +59,7 @@ else if(canvasWidth >= canvasHeigth ){//landscape
 
 var ballRadius = unit/5;//10
 var ballXStartingPosition = canvasWidth/2;
-var ballYStartingPosition = canvasHeigth-25;
+var ballYStartingPosition = canvasHeigth-100;
 var ballXPosition = ballXStartingPosition;
 var ballYPosition = ballYStartingPosition;
 
@@ -179,20 +179,43 @@ function keyUp(e) {
     }
 }
 
+// return true if the rectangle and circle are colliding
+function rectCircleColliding(rect){
+    let distX = Math.abs(ballXPosition - rect.x - brickWidth/2);
+    let distY = Math.abs(ballYPosition - rect.y - brickHeight/2);
+
+    if (distX > (brickWidth/2 + ballRadius)) { return false; }
+    if (distY > (brickHeight/2 + ballRadius)) { return false; }
+
+    if (distX <= (brickWidth/2)) { return true; }
+    if (distY <= (brickHeight/2)) { return true; }
+
+    let dx=distX-brickWidth/2;
+    let dy=distY-brickHeight/2;
+    return (dx*dx+dy*dy<=(ballRadius * ballRadius));
+}
+
+
+
+
 
 function collisionDetection() {
 	// Iterujemy po blokach
 	for(var column = 0; column < brickAmountColumn; column++) {
 		for(var row = 0; row < brickAmountRow; row++) {
 			var currentBrick = bricks[column][row];
-			if(currentBrick.notDestroyed == 1) {
+            if(currentBrick.notDestroyed == 1) {
+                let isItTrue = rectCircleColliding(currentBrick);
 		        if(
+                    isItTrue
+                    /*
 					// Jeśli znajduje się na szerokość bloku
-		            ballXPosition > currentBrick.x &&
-					ballXPosition < currentBrick.x+brickWidth &&
+		            ballXPosition - ballRadius > currentBrick.x &&
+					ballXPosition + ballRadius < currentBrick.x + brickWidth &&
 					// Jeśli znajduje się na wysokośc bloku
 		            ballYPosition > currentBrick.y &&
-		            ballYPosition < currentBrick.y+brickHeight
+		            ballYPosition < currentBrick.y + brickHeight
+                    */
 		        ) {
 					// Trafienie
 					currentBrick.notDestroyed = 0;
@@ -258,6 +281,24 @@ function drawLives() {
 	context.fillText("Życia: "+lives, canvasWidth-65, 20);
 }
 
+// return true if the rectangle and circle are colliding
+function playerCollision(){
+    //console.log("ball pos " + ballXPosition + "ball Y " + ballYPosition + "player pos "+ playerPosition + "weed " + playerWidth + "height " + (canvasHeigth-playerHeight - playerHeight/2));
+    let distX = Math.abs(ballXPosition - playerPosition - playerWidth/2);
+    let distY = Math.abs(ballYPosition - (canvasHeigth- playerHeight/2));
+    //console.log(distX + "\t" + distY);
+
+    if (distX > (playerWidth/2 + ballRadius)) { return false; }
+    if (distY > (playerHeight/2 + ballRadius)) { return false; }
+
+    if (distX <= (playerWidth/2)) { return true; }
+    if (distY <= (playerHeight/2)) { return true; }
+
+    let dx=distX-playerWidth/2/2;
+    let dy=distY-playerHeight/2;
+    return (dx*dx+dy*dy<=(ballRadius * ballRadius));
+}
+
 function drawGame() {
 	context.clearRect(0, 0, canvasWidth, canvasHeigth);
 	drawBricks();
@@ -266,6 +307,7 @@ function drawGame() {
 	drawScore();
 	drawLives();
 	collisionDetection();
+    let wdupiu = playerCollision();
 
 	if(ballXPosition + ballSpeedX > canvasWidth-ballRadius || ballXPosition + ballSpeedX < ballRadius) {
 		ballSpeedX = -ballSpeedX;
@@ -273,32 +315,31 @@ function drawGame() {
 	if(ballYPosition + ballSpeedY < ballRadius) {
 		ballSpeedY = -ballSpeedY;
 	}
-	else if(ballYPosition + ballSpeedY > canvasHeigth-ballRadius) {
-		if(ballXPosition > playerPosition && ballXPosition < playerPosition + playerWidth) {
-			ballSpeedY = -ballSpeedY;
-    	}
-		else {
-			lives--;
-			if(!lives) {
-        context.clearRect(0, 0, canvasWidth, canvasHeigth);
-      	drawBricks();
-      	drawBall();
-      	drawPlayer();
-      	drawScore();
-      	drawLives();
-        collisionDetection();
-				alert("FUCKING LOOSER");
-				document.location.reload();
-			}
-			else {
-        		ballXPosition = ballXStartingPosition;
-        		ballYPosition = ballYStartingPosition;
-        		ballSpeedX = 3;
-        		ballSpeedY = -3;
-        		playerPosition = (canvasWidth-playerWidth)/2;
-			}
-		}
+	else if(wdupiu) {
+		ballSpeedY = -ballSpeedY;
 	}
+    else if(ballYPosition + ballSpeedY > canvasHeigth-ballRadius) {
+        ballSpeedY = -ballSpeedY;
+        lives--;
+        if(!lives) {
+    context.clearRect(0, 0, canvasWidth, canvasHeigth);
+    drawBricks();
+    drawBall();
+    drawPlayer();
+    drawScore();
+    drawLives();
+    collisionDetection();
+            alert("FUCKING LOOSER");
+            document.location.reload();
+        }
+        else {
+            ballXPosition = ballXStartingPosition;
+            ballYPosition = ballYStartingPosition;
+            ballSpeedX = 3;
+            ballSpeedY = -3;
+            playerPosition = (canvasWidth-playerWidth)/2;
+        }
+    }
 
 	if(rightPressed && playerPosition < canvasWidth-playerWidth) {
 		playerPosition += speed;
@@ -336,7 +377,7 @@ drawGame();
 $('#view').on('touchstart', function(e) {
 	var clickX = e.touches[0];
 	console.log(e.touches);
-	var viewWidth = $("#view").width();	
+	var viewWidth = $("#view").width();
 	if (clickX.clientX > viewWidth/2) {
 		rightPressed = true;
 	} else {
@@ -344,7 +385,7 @@ $('#view').on('touchstart', function(e) {
 	}
 }).on('touchend', function(e) {
 	if (e.touches.length > 0){
-		var viewWidth = $("#view").width();	
+		var viewWidth = $("#view").width();
 		var latestTouch = e.touches[0];
 		rightPressed = false;
 		leftPressed = false;
