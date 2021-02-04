@@ -155,19 +155,6 @@ function keyDown(e) {
     else if(e.key == "Left" || e.key == "ArrowLeft" || e.key == "a" || e.key == "A") {
         leftPressed = true;
     }
-    else if(e.key == " ") {
-        alert("PAUZA");
-        if(rightPressed)
-        {
-          rightPressed = false;
-          playerPosition -= speed;
-        }
-        else if(leftPressed)
-        {
-          leftPressed = false;
-          playerPosition += speed;
-        }
-    }
 }
 
 function keyUp(e) {
