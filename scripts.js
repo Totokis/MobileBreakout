@@ -1,25 +1,8 @@
 // Paweł Piłat, Norbert Janas, Paweł Janusz
 
-// Listen for resize changes
-window.addEventListener('load', function (){
-	var onResize = sessionStorage.getItem("onResize")
-	console.log('onResize: ' + onResize);
-	if(onResize==1){
-		console.log('onResize');
-		sessionStorage.setItem("onResize","0")
-	}
-	else if(onResize==0){
-		console.log('Not onResize');
-		sessionStorage.setItem("score","0");
-		sessionStorage.setItem("lives","3");
-	}
-});
 
 window.addEventListener("resize", function() {
 	// Get screen size (inner/outerWidth, inner/outerHeight)
-	sessionStorage.setItem("onResize","1")
-	sessionStorage.setItem("score",score.toString());
-	sessionStorage.setItem("lives",lives.toString());
 	location.reload()
 }, false);
 
@@ -94,14 +77,6 @@ var brickOffsetLeft = sideOffset;//30
 var score = 0;
 var lives = 3;
 var level = 1;
-var storageScore = sessionStorage.getItem("score");
-var storageLives = sessionStorage.getItem("lives");
-if(storageScore){
-	score = storageScore;
-}
-if(storageLives){
-	lives = storageLives
-}
 
 // Kolory
 //var brickColors = ["#EA3812", "#44EA12", "#12BEEA", "#C012EA", "#EA9E12","#1242C5", "#CBE032", "#E11A8F", "13F1B0"]
